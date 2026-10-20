@@ -1,0 +1,1 @@
+export const apiImageUrl = "http://10.10.200.201/";

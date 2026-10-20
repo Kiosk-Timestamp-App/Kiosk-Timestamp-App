@@ -1,0 +1,7 @@
+﻿# Netlify (Git-Deploy): Base directory = frontend
+[build]
+  command = "npm run build:local"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"

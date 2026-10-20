@@ -1,0 +1,147 @@
+/* Strommix-Bildschirm (Karte, Herkunft, Tacho). Animiert werden nur transform/opacity und wenige Strich-Offsets – keine Filter. */
+
+/* Schraffur für Import-Balken (Textur statt Farbe allein) */
+.ov-origin-hatch {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--c) 0 0.32em,
+    color-mix(in srgb, var(--c) 38%, transparent) 0.32em 0.56em
+  );
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 70%, transparent);
+}
+
+.ov-origin-bar {
+  animation: ov-origin-grow 1300ms var(--ease-out-expo) both;
+  animation-delay: var(--d, 0ms);
+  transition: width 1200ms var(--ease-out-quart);
+}
+@keyframes ov-origin-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+.ov-origin-seg {
+  transform-origin: left;
+  animation: ov-origin-grow 1100ms var(--ease-out-expo) both;
+  animation-delay: var(--d, 0ms);
+}
+
+/* Werte erscheinen erst, wenn ihr Balken/Zeiger angekommen ist */
+.ov-map-fadein {
+  animation: ov-map-fadein 600ms var(--ease-out-quart) both;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes ov-map-fadein {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Das Fokusland atmet ruhig (nur Opazität, ungefilterte Ebene) */
+.ov-map-breathe {
+  animation: ov-map-breathe 6s ease-in-out infinite;
+}
+@keyframes ov-map-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ------------------------------------------------------------ Signatur: Lebensadern
+   Je Ader ein leuchtendes Energiepaket mit weicher Spur (6 kleine Ebenen, nur transform + opacity).
+   Die Fahrt-Keyframes (Punkte entlang der Kurve) erzeugt FlowMap; Periode = 5,6 s − 3,2 s × √(MW / größter Fluss):
+   große Flüsse fließen sichtbar schneller, Ader und Paket sind dicker.
+   Bei Ankunft (68 %) blüht am Ziel ein Lichtschein auf: Import im Land, Export beim Nachbarn. */
+.ov-packet {
+  will-change: transform, opacity;
+}
+@keyframes ov-pk-fade-a {
+  0% {
+    opacity: 0;
+  }
+  6%,
+  62% {
+    opacity: 1;
+  }
+  70%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes ov-pk-fade-b {
+  0% {
+    opacity: 0;
+  }
+  8%,
+  60% {
+    opacity: 0.45;
+  }
+  68%,
+  100% {
+    opacity: 0;
+  }
+}
+.ov-bloom {
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: ov-bloom var(--dur, 4s) var(--ease-out-quart) var(--delay, 1.5s) infinite both;
+}
+@keyframes ov-bloom {
+  0%,
+  64% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  71% {
+    opacity: 1;
+    transform: scale(0.55);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+}
+
+/* Etiketten erscheinen gestaffelt */
+.ov-map-chip {
+  animation: ov-map-chip 900ms var(--ease-out-expo) both;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes ov-map-chip {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* Linien zeichnen sich */
+.ov-map-draw {
+  animation: ov-draw 2.2s var(--ease-out-expo) 200ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ov-origin-bar,
+  .ov-origin-seg,
+  .ov-map-fadein,
+  .ov-map-breathe,
+  .ov-map-chip,
+  .ov-map-draw {
+    animation: none !important;
+  }
+  /* ohne Bewegung: Pakete und Lichtschein aus, Adern bleiben als ruhige Linien mit Pfeilspitze */
+  .ov-packets {
+    display: none;
+  }
+  .ov-map-chip {
+    transform: translate(-50%, -50%);
+  }
+}
