@@ -1,0 +1,1 @@
+export const apiBaseUrl = "http://10.10.200.201/api/method/";

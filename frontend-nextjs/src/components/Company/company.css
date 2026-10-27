@@ -1,0 +1,271 @@
+/* Bildschirm „Ihr Partner vor Ort“ – nur transform/opacity/stroke-dashoffset, keine Blur-Animationen. */
+
+/* ------------------------------------------------------------ Schleifen pausieren
+   Bildschirm unsichtbar → alles anhalten; nicht aktive Kapitel (opacity 0, bleiben gemountet) ebenso. */
+.cp-root[data-paused="true"] *,
+.cp-root[data-paused="true"] *::before,
+.cp-root[data-paused="true"] *::after,
+.cp-chapter:not([data-state="active"]) *,
+.cp-chapter:not([data-state="active"]) *::before,
+.cp-chapter:not([data-state="active"]) *::after {
+  animation-play-state: paused !important;
+}
+
+/* ------------------------------------------------------------ Typografie */
+/* Eyebrows skalieren mit der Bühne (global in rem definiert → auf 4K sonst winzig) */
+.cp-root .eyebrow {
+  font-size: 0.95em;
+}
+.cp-root .eyebrow-plain {
+  font-size: 0.85em;
+}
+/* Keine Einzelwörter in der letzten Zeile, ausgewogene Überschriften, Hervorhebung bricht nicht */
+.cp-root p,
+.cp-root li {
+  text-wrap: pretty;
+}
+.cp-root h2,
+.cp-root h3 {
+  text-wrap: balance;
+}
+.cp-root .cp-hl {
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------ Kapitelwechsel
+   Überlappende Blende ohne leere Bühne: das neue Kapitel steigt nach 120 ms von unten auf,
+   das alte sinkt langsam zurück (600 ms) – beide sind kurz gleichzeitig sichtbar. */
+.cp-chapter {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+}
+.cp-chapter[data-state="active"] {
+  z-index: 2;
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 650ms var(--ease-out-quart) 120ms,
+    transform 1100ms var(--ease-out-expo) 120ms;
+}
+.cp-chapter[data-state="before"] {
+  z-index: 1;
+  opacity: 0;
+  transform: translate3d(0, -1.5%, 0) scale(0.975);
+  pointer-events: none;
+  transition:
+    opacity 600ms cubic-bezier(0.4, 0, 0.6, 1),
+    transform 800ms var(--ease-out-quart);
+}
+.cp-chapter[data-state="after"] {
+  z-index: 0;
+  opacity: 0;
+  transform: translate3d(0, 3%, 0);
+  pointer-events: none;
+  transition: none;
+}
+
+/* Kapitel-Fortschritt */
+.cp-progress {
+  transform-origin: 0 50%;
+  animation: ov-progress linear both;
+}
+
+/* ------------------------------------------------------------ Diagramme */
+.cp-flow {
+  stroke-dasharray: 1.6 5.4;
+  animation: cp-flow 1.8s linear infinite;
+}
+@keyframes cp-flow {
+  to {
+    stroke-dashoffset: -7;
+  }
+}
+.cp-draw {
+  stroke-dasharray: 1;
+  animation: ov-draw 1600ms var(--ease-out-expo) both;
+  animation-delay: var(--d, 0ms);
+}
+.cp-pop {
+  animation: cp-pop 900ms var(--ease-out-expo) both;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes cp-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+.cp-ring {
+  animation: ov-pulse-ring 2.8s var(--ease-out-quart) infinite;
+  animation-delay: var(--d, 0ms);
+}
+.cp-fill {
+  transform-origin: 0 50%;
+  animation: cp-fill 2600ms var(--ease-out-expo) both;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes cp-fill {
+  from {
+    transform: scaleX(0);
+  }
+}
+.cp-fill-y {
+  transform-origin: 50% 0;
+  animation: cp-fill-y 2600ms var(--ease-out-expo) both;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes cp-fill-y {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+/* Betreiber-Zeitachse: Module klappen nacheinander auf (Wachstum ohne Zahlen) */
+.cp-module {
+  transform-origin: 50% 100%;
+  animation: cp-module 700ms var(--ease-out-expo) both;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes cp-module {
+  from {
+    opacity: 0;
+    transform: scaleY(0.05);
+  }
+}
+/* Lichtkante, die über das gewachsene Modulband läuft */
+.cp-sweep {
+  animation: cp-sweep 6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes cp-sweep {
+  0% {
+    transform: translate3d(-100%, 0, 0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  60%,
+  100% {
+    transform: translate3d(100%, 0, 0);
+    opacity: 0;
+  }
+}
+
+/* ------------------------------------------------------------ Signatur: Sonnenaufgang
+   1) Sonne steigt auf  2) Licht rollt Reihe für Reihe nach vorn  3) ruhiger Reflex wandert die Lichtbahn entlang */
+.cp-sunrise {
+  animation: cp-sunrise 3200ms var(--ease-out-expo) 200ms both;
+}
+@keyframes cp-sunrise {
+  from {
+    transform: translate3d(0, 22%, 0);
+    opacity: 0.15;
+  }
+}
+.cp-corona {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: cp-corona 7s ease-in-out infinite;
+}
+@keyframes cp-corona {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+.cp-shafts {
+  animation: cp-shafts 26s ease-in-out infinite alternate;
+}
+@keyframes cp-shafts {
+  from {
+    transform: rotate(-2.5deg);
+  }
+  to {
+    transform: rotate(2.5deg);
+  }
+}
+.cp-breathe-op {
+  animation: cp-breathe-op 8s ease-in-out infinite;
+}
+@keyframes cp-breathe-op {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.cp-rowlight {
+  opacity: 0;
+  animation: cp-rowlight 2800ms var(--ease-out-quart) both;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes cp-rowlight {
+  0% {
+    opacity: 0;
+  }
+  35% {
+    opacity: 0.55;
+  }
+  100% {
+    opacity: 0.14;
+  }
+}
+.cp-glide {
+  opacity: 0;
+  animation: cp-glide 9s cubic-bezier(0.45, 0, 0.55, 1) 7.5s infinite;
+}
+@keyframes cp-glide {
+  0% {
+    transform: translate(725px, 306px) scale(0.2);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  70% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: translate(650px, 600px) scale(2.4);
+    opacity: 0;
+  }
+}
+
+/* Signatur-Moment: erster Strahl auf der vordersten Reihe – Lichtblitz, der zu einem Schimmer abklingt */
+.cp-flare {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  animation: cp-flare 2600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes cp-flare {
+  0% {
+    opacity: 0;
+    transform: scale(0.15, 0.15);
+  }
+  18% {
+    opacity: 1;
+    transform: scale(1.15, 1.15);
+  }
+  100% {
+    opacity: 0.32;
+    transform: scale(0.75, 0.75);
+  }
+}
+
+/* Bewegung reduziert: Endzustände ohne Schleifen */
+@media (prefers-reduced-motion: reduce) {
+  .cp-glide,
+  .cp-sweep {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+}
